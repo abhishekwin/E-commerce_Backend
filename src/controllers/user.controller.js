@@ -2,11 +2,12 @@ const User = require("../models/user.model")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const secretKey = process.env.JWT_SECRET_KEY
-
+const adminEmail = process.env.AdminEmail;
 exports.create = async (req, res) => {
     try {
-        const { username, email, password, roll } = req.body
-        if (!(username && email && roll)) {
+       
+        const { username, email, password, role } = req.body
+        if (!(username && email && role)) {
             res.status(400).send("All input is required");
         }
         const oldUser = await User.findOne({
@@ -17,10 +18,10 @@ exports.create = async (req, res) => {
         if (oldUser) {
             return res.status(409).send("User Already Exist. Please Login");
         }
-        const payload = { username, email, roll }
+        const payload = { username, email, role }
         let verified = null
-        if(roll == 'seller'){
-            verified = true
+        if(role == 'Seller'){
+            verified = false
         }
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await User.create({ ...payload,isVerified : verified, password: hashedPassword });
@@ -66,4 +67,31 @@ exports.get_users = async (req, res) => {
     } catch {
         res.status(500).json({ error: error.message });
     }
+}
+
+exports.verifySeller = async(req,res)=>{
+    try {
+        console.log(req.query.id,"<><><><><><><><><");
+        
+        const seller = await User.findOne({where:{id:req.query.id}})
+        console.log(seller.isVerified,",.,.,");
+        if(seller.isVerified==true){
+            return res.status(404).json({ message: 'You are already a verified seller' });
+
+        }
+        if(adminEmail==req.query.email){
+            seller.isVerified=true;
+            await seller.save()
+            res.send({msg: "Seller verified succesfuly",seller})
+        }else{
+
+            return res.status(404).json({ message: 'You are not admin' });
+        }
+
+
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+        
+    }
+
 }

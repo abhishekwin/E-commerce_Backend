@@ -32,6 +32,10 @@ const Product = sequelize.define('productDetails', {
   sellerId:{
     type: DataTypes.STRING,
     allowNull:false
+  },
+  productImageUrl:{
+    type:DataTypes.STRING,
+    allowNull:false
   }
 });
 
