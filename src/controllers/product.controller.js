@@ -2,34 +2,48 @@
 const Product = require("../models/product.model")
 const Seller = require("../models/user.model")
 const multer = require('multer');
+const { v2: cloudinary } = require('cloudinary');
 const path = require('path');
 const express = require('express');
-const { log } = require("console");
-const app = express();
+const { log } = require("console");3
+// const app = express();
 require("../models/assosiations")
+const dotenv = require("dotenv")
 
-const storage = multer.diskStorage({
-    destination: 'uploads/', // Specify the folder to store the uploaded images
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-      const extension = path.extname(file.originalname);
-      cb(null, file.fieldname + '-' + uniqueSuffix + extension);
-    },
+dotenv.config()
+
+
+// const storage = multer.diskStorage({
+//     destination: 'uploads/', // Specify the folder to store the uploaded images
+//     filename: (req, file, cb) => {
+//       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+//       const extension = path.extname(file.originalname);
+//       cb(null, file.fieldname + '-' + uniqueSuffix + extension);
+//     },
+//   });
+//   exports.upload = multer({ storage: storage });
+//   app.use(express.json());
+
+const app = express();
+ exports.upload = multer({ dest: 'uploads/' });
+
+// Cloudinary configuration
+cloudinary.config({ 
+    cloud_name: process.env.Cloud_Name, 
+    api_key:  process.env.API_KEY, 
+    api_secret: process.env.API_SECRET
   });
-  exports.upload = multer({ storage: storage });
-  app.use(express.json());
-
 exports.create = async (req, res) => {
-    const { originalname, filename } = req.file;
-    console.log(req.file,"<><>?<><><");
-    const imageUrl = `http://localhost:3000/uploads/${filename}`;
+    // const { originalname, filename } = req.file;
+    // console.log(req.file,"<><>?<><><");
+    // const imageUrl = `http://localhost:3000/uploads/${filename}`;
     try {
-
+        const result = await cloudinary.uploader.upload(req.file.path);
         const { productName, description, category, price, inStock } = req.body
         const seller = await Seller.findOne({ where: { id: req.query.id } })
 
         if (seller.isVerified) {
-            const payload = { productName, description, category, price, inStock, sellerId: seller.id ,productImageUrl:imageUrl}
+            const payload = { productName, description, category, price, inStock, sellerId: seller.id ,productImageUrl:result.secure_url}
             data = await Product.create(payload)
 
             res.send({ "message": "Product save sucessfully", result: data })
