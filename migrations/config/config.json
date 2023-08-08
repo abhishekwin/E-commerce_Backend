@@ -1,9 +1,9 @@
 {
   "development": {
-    "username": "demoback_user",
-    "password": "3GFlVEKDiFeOXNDzP6RC9MjXTsrryWg6",
-    "database": "demoback",
-    "host": "dpg-cj8ulaivvtos73fc77t0-a",
+    "username": "username",
+    "password": "yourpassword",
+    "database": "yourdatabase",
+    "host": "localhost",
     "dialect": "postgres"
   },
   "test": {
@@ -14,11 +14,11 @@
     "dialect": "mysql"
   },
   "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    "username": "demoback_user",
+    "password": "3GFlVEKDiFeOXNDzP6RC9MjXTsrryWg6",
+    "database": "demoback",
+    "host": "dpg-cj8ulaivvtos73fc77t0-a",
+    "dialect": "postgres"
   }
 }
 
