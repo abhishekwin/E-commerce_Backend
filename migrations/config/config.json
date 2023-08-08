@@ -1,10 +1,10 @@
 {
   "development": {
-    "username": "root",
-    "password": "password",
-    "database": "Demo_Project",
-    "host": "localhost",
-    "dialect": "mysql"
+    "username": "demoback_user",
+    "password": "3GFlVEKDiFeOXNDzP6RC9MjXTsrryWg6",
+    "database": "demoback",
+    "host": "dpg-cj8ulaivvtos73fc77t0-a",
+    "dialect": "postgres"
   },
   "test": {
     "username": "root",

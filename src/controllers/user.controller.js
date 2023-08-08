@@ -33,7 +33,8 @@ exports.create = async (req, res) => {
               },
             })
         res.send({ "message": "data save sucessfully", result: user,password:password,token: jwtToken })
-    } catch {
+    } catch(err) {
+        console.log("rrr", err)
         res.status(500).json({ error: 'Error registering user' });
     }
 }

@@ -38,18 +38,24 @@ exports.create = async (req, res) => {
     // console.log(req.file,"<><>?<><><");
     // const imageUrl = `http://localhost:3000/uploads/${filename}`;
     try {
-        const result = await cloudinary.uploader.upload(req.file.path);
         const { productName, description, category, price, inStock } = req.body
+      
         const seller = await Seller.findOne({ where: { id: req.query.id } })
+      
 
         if (seller.isVerified) {
+        const result = await cloudinary.uploader.upload(req.file.path);
+
             const payload = { productName, description, category, price, inStock, sellerId: seller.id ,productImageUrl:result.secure_url}
             data = await Product.create(payload)
 
             res.send({ "message": "Product save sucessfully", result: data })
         }
-
-    } catch {
+else{
+    res.send("You are not a verified seller")
+}
+    } catch(err) {
+        console.log(err,"err");
         res.send("You are not a verified seller")
     }
 }

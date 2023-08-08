@@ -11,7 +11,7 @@ const cors = require('cors');
 
 const startServer = async () =>{
   try{
-    await initializeAdmin()
+    // await initializeAdmin()
     app.use(cors())
     app.use("/api", router)
     app.listen(port, () => {

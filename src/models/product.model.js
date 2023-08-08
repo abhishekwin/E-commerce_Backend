@@ -2,7 +2,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('./db.config');
 
-const Product = sequelize.define('productDetails', {
+const Product = sequelize.define('Products', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -26,7 +26,7 @@ const Product = sequelize.define('productDetails', {
     allowNull: false
   },
   inStock: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.BOOLEAN,
     allowNull: false
   },
   sellerId:{
