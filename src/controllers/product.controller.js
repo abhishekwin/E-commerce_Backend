@@ -66,8 +66,9 @@ exports.getsellerProduct = async (req, res) => {
         const seller = await Seller.findOne({ where: { id: req.query.id } })
 
         const userWithPosts = await Seller.findByPk(seller.id, { include: Product });
-        if (userWithPosts.productDetails.length != 0) {
-            res.send({ msg: "Product Fetched fetched!!", data: userWithPosts.productDetails })
+       
+        if (userWithPosts.Products.length != 0) {
+            res.send({ msg: "Product Fetched fetched!!", data: userWithPosts.Products })
         } else {
             res.send("Dont have product")
         }
