@@ -6,5 +6,5 @@ router.use("/uploadProduct",uploads.upload.single('productImageUrl'), product.cr
 router.use("/getProducts", product.get_products)
 router.use("/getSellerProduct",product.getsellerProduct)
 router.use("/getProductByCategory",product.getProductByCategory)
-router.use("/getAllCategory",product.get_allCategory)
-module.exports = router
+router.use("/deleteProduct",product.deleteProduct)
+module.exports=router

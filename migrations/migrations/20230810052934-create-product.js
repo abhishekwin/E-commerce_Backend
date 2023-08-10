@@ -16,9 +16,7 @@ module.exports = {
         type: Sequelize.STRING
       },
       category: {
-        type: Sequelize.ENUM("Mobile","Headphone","Car","Bike"),
-        defaultValue:"Headphone",
-        allowNull:false
+        type: Sequelize.STRING
       },
       price: {
         type: Sequelize.INTEGER

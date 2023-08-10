@@ -21,11 +21,8 @@ module.exports = {
       role: {
         type: Sequelize.ENUM("Admin","User","Seller"),defaultValue:"User", allowNull:false
       },
-      token: {
-        type: Sequelize.STRING
-      },
       isVerified: {
-        type: Sequelize.STRING
+        type: Sequelize.BOOLEAN
       },
       createdAt: {
         allowNull: false,

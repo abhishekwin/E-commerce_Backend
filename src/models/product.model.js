@@ -17,8 +17,7 @@ const Product = sequelize.define('Products', {
     allowNull: false
   },
   category:{
-    type: DataTypes.ENUM("Mobile","Headphone","Car","Bike"),
-    defaultValue:"Headphone",
+    type: DataTypes.STRING,
     allowNull:false
   },
   price: {
@@ -26,7 +25,7 @@ const Product = sequelize.define('Products', {
     allowNull: false
   },
   inStock: {
-    type: DataTypes.BOOLEAN,
+    type: DataTypes.INTEGER,
     allowNull: false
   },
   sellerId:{
@@ -38,6 +37,5 @@ const Product = sequelize.define('Products', {
     allowNull:false
   }
 });
-
 
 module.exports = Product;
