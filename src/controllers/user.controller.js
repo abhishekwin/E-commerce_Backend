@@ -75,6 +75,7 @@ exports.get_users = async (req, res) => {
 
 exports.verifySeller = async (req, res) => {
   try {
+    console.log("KSKSKSK");
     const token = req.body.token || req.query.token || req.headers.authorization?.split(' ')[1];
 
     const decode = jwt.verify(token, secretKey);
