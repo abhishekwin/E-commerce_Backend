@@ -10,7 +10,6 @@ dotenv.config();
 const adminEmail = process.env.AdminEmail;
 
 const jwt = require("jsonwebtoken");
-const { log } = require("console");
 
 const secretKey = process.env.JWT_SECRET_KEY;
 // const storage = multer.diskStorage({
@@ -36,7 +35,10 @@ cloudinary.config({
 exports.create = async (req, res) => {
   try {
     const { productName, description, category, price, inStock } = req.body;
-    const token = req.body.token || req.query.token || req.headers.authorization?.split(' ')[1];
+    const token =
+      req.body.token ||
+      req.query.token ||
+      req.headers.authorization?.split(" ")[1];
     const decode = jwt.verify(token, secretKey);
 
     const seller = await Seller.findOne({ where: { id: decode.userId } });
@@ -44,13 +46,13 @@ exports.create = async (req, res) => {
     const categoryNm = await Category.findOne({
       where: { categoryName: category },
     });
-    console.log(categoryNm);
+
     if (!categoryNm.categoryName) {
       res.send({ message: "Invalid Category" });
     }
     if (seller.isVerified) {
       const result = await cloudinary.uploader.upload(req.file.path);
-      console.log(result, "result");
+
       const payload = {
         productName,
         description,
@@ -77,10 +79,13 @@ exports.create = async (req, res) => {
 
 exports.getsellerProduct = async (req, res) => {
   try {
-    const token = req.body.token || req.query.token || req.headers.authorization?.split(' ')[1];
+    const token =
+      req.body.token ||
+      req.query.token ||
+      req.headers.authorization?.split(" ")[1];
 
     const decode = jwt.verify(token, secretKey);
-    const seller = await Seller.findOne({ where: { id: decode.userId} });
+    const seller = await Seller.findOne({ where: { id: decode.userId } });
 
     const userWithPosts = await Seller.findByPk(seller.id, {
       include: Product,
@@ -117,8 +122,8 @@ exports.getProductByCategory = async (req, res) => {
     const product = await Product.findAll({
       where: { category: req.query.categoryName },
     });
-    if(!product.Product.length){
-      res.send("Don't have product with this category")
+    if (!product.length) {
+      res.send("Don't have product with this category");
     }
     res.send({ msg: "Product Fetched!", product });
   } catch (error) {
@@ -127,18 +132,22 @@ exports.getProductByCategory = async (req, res) => {
 };
 
 exports.deleteProduct = async (req, res) => {
-    try {
-        const token = req.body.token || req.query.token || req.headers.authorization?.split(' ')[1];
+  try {
+    const token =
+      req.body.token ||
+      req.query.token ||
+      req.headers.authorization?.split(" ")[1];
 
     const decode = jwt.verify(token, secretKey);
-    console.log(decode,"Decode");
-    const seller = await Seller.findOne({ where: { id: decode.userId} });
-    const deletePr = await Product.findOne({where:{id:req.body.id}})
-    if(adminEmail==seller.email||seller.id==decode.userId){
-    await deletePr.destroy()
+
+    const seller = await Seller.findOne({ where: { id: decode.userId } });
+    const deletePr = await Product.findOne({ where: { id: req.body.id } });
+    if (adminEmail == seller.email || seller.id == decode.userId) {
+      await deletePr.destroy();
     }
-    res.send("Product Delete Succesfully").status(200)
-  } catch(err) {
-    console.log(err,"errorrr");
+    res.send("Product Delete Succesfully").status(200);
+  } catch (err) {
+    console.log(err, "errorrr");
     res.send("You don't have any product");
-  }}
+  }
+};

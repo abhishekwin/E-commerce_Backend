@@ -1,8 +1,8 @@
 // models/User.js
-const { DataTypes } = require('sequelize');
-const sequelize = require('./db.config');
+const { DataTypes } = require("sequelize");
+const sequelize = require("./db.config");
 
-const Category = sequelize.define('Categories', {
+const Category = sequelize.define("Categories", {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
