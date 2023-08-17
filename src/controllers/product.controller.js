@@ -1,10 +1,10 @@
-const Product = require("../models/product.model");
-const Seller = require("../models/user.model");
-const Category = require("../models/category.model");
+const Product = require("../models/productdetails");
+const Seller = require("../models/user-details");
+const Category = require("../models/categoriess");
 const multer = require("multer");
 const { v2: cloudinary } = require("cloudinary");
 const express = require("express");
-require("../models/assosiations");
+// require("../models/associations");
 const dotenv = require("dotenv");
 dotenv.config();
 const adminEmail = process.env.AdminEmail;
@@ -123,11 +123,11 @@ exports.getProductByCategory = async (req, res) => {
       where: { category: req.query.categoryName },
     });
     if (!product.length) {
-      res.send("Don't have product with this category");
+      res.send({msg:"Don't have product with this category",status:"Sucess"}).status(404);
     }
     res.send({ msg: "Product Fetched!", product });
   } catch (error) {
-    res.send("Don't have product with this category");
+    res.send({msg:"Internal Server Error",status:"Failure"}).status(505);
   }
 };
 
@@ -145,7 +145,7 @@ exports.deleteProduct = async (req, res) => {
     if (adminEmail == seller.email || seller.id == decode.userId) {
       await deletePr.destroy();
     }
-    res.send("Product Delete Succesfully").status(200);
+    res.send({msg:"Product Delete Succesfully",status:"Sucess"}).status(200);
   } catch (err) {
     console.log(err, "errorrr");
     res.send("You don't have any product");

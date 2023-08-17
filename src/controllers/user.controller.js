@@ -1,26 +1,29 @@
-const User = require("../models/user.model");
+const {models:{UserDetail}} = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const secretKey = process.env.JWT_SECRET_KEY;
 const adminEmail = process.env.AdminEmail;
+
 exports.create = async (req, res) => {
   try {
     const { username, email, password, role } = req.body;
-    const oldUser = await User.findOne({
+    console.log(req.body);
+    const oldUser = await UserDetail.findOne({
       where: {
         email: req.body.email,
       },
     });
+
     if (oldUser) {
       return res.status(409).send("User Already Exist. Please Login");
     }
     const payload = { username, email, role };
-    let verified = null;
-    if (role == "Seller") {
+    let verified = true;
+    if (role == 3) {
       verified = false;
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({
+    const user = await UserDetail.create({
       ...payload,
       isVerified: verified,
       password: hashedPassword,
@@ -32,6 +35,7 @@ exports.create = async (req, res) => {
       .send({ message: "User added sucessfully", token: jwtToken })
       .status(200);
   } catch (err) {
+    console.log(err,"reerer");
     res.status(500).json({ error: "Error registering user" });
   }
 };
@@ -42,7 +46,7 @@ exports.login = async (req, res) => {
     if (!email) {
       res.status(400).json({ msg: "Username and Email is required." });
     }
-    const user = await User.findOne({ where: { email } });
+    const user = await UserDetail.findOne({ where: { email } });
     if (!user) {
       res.status(401).json({ error: "Unauthorized User" });
     }

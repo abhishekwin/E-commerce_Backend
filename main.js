@@ -6,7 +6,8 @@ const port = process.env.PORT;
 const app = express();
 const { initializeAdmin } = require("./middleware/admin");
 app.use(bodyParser.json());
-require("./src/models/db.config");
+require("./src/models/index");
+
 const cors = require("cors");
 
 const startServer = async () => {
