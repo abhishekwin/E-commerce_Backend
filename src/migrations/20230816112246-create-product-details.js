@@ -22,12 +22,12 @@ module.exports = {
         type: Sequelize.INTEGER,
       },
       inStock: {
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.INTEGER,
       },
       sellerId: {
         type: Sequelize.INTEGER,
       },
-      productImageUrl: {
+      productImage: {
         type: Sequelize.STRING,
       },
       createdAt: {

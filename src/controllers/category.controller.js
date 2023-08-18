@@ -1,7 +1,7 @@
-const Category = require("../models/category.model");
-const User = require("../models/user.model");
+const Category = require("../models/categoriess");
+const User = require("../models/user-details");
 
-require("../models/assosiations");
+// require("../models/associations");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 
