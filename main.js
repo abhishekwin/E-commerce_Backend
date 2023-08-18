@@ -4,11 +4,11 @@ const bodyParser = require("body-parser");
 const router = require("./src/routers/index.routes");
 const port = process.env.PORT;
 const app = express();
-const { initializeAdmin } = require("./middleware/admin");
 app.use(bodyParser.json());
 require("./src/models/index");
 
 const cors = require("cors");
+const { initializeAdmin } = require("./middleware/admin");
 
 const startServer = async () => {
   try {

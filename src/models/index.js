@@ -4,13 +4,8 @@ const { Sequelize } = require("sequelize");
 
 require("dotenv").config();
 
-const sequelize = new Sequelize({
-  database: process.env.Database_Name,
-  username: process.env.UserName,
-  password: process.env.Password,
-  host: process.env.Host,
-  dialect: process.env.DB_DIALECT,
-});
+const dbConfig = require("../config/db.config");
+const sequelize = new Sequelize(dbConfig.development);
 
 sequelize
   .authenticate()
@@ -49,5 +44,3 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 module.exports = db.sequelize;
-
-

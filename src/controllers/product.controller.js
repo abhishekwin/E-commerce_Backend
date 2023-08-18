@@ -123,11 +123,16 @@ exports.getProductByCategory = async (req, res) => {
       where: { category: req.query.categoryName },
     });
     if (!product.length) {
-      res.send({msg:"Don't have product with this category",status:"Sucess"}).status(404);
+      res
+        .send({
+          msg: "Don't have product with this category",
+          status: "Sucess",
+        })
+        .status(404);
     }
     res.send({ msg: "Product Fetched!", product });
   } catch (error) {
-    res.send({msg:"Internal Server Error",status:"Failure"}).status(505);
+    res.send({ msg: "Internal Server Error", status: "Failure" }).status(505);
   }
 };
 
@@ -145,7 +150,9 @@ exports.deleteProduct = async (req, res) => {
     if (adminEmail == seller.email || seller.id == decode.userId) {
       await deletePr.destroy();
     }
-    res.send({msg:"Product Delete Succesfully",status:"Sucess"}).status(200);
+    res
+      .send({ msg: "Product Delete Succesfully", status: "Sucess" })
+      .status(200);
   } catch (err) {
     console.log(err, "errorrr");
     res.send("You don't have any product");

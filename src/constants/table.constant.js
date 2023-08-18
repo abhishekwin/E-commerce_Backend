@@ -1,11 +1,11 @@
 const TableConstants = {
   USER_DETAILS: {
-    modelName: 'userDetail',
-    tableName: 'UserDetails',
+    modelName: "userDetail",
+    tableName: "UserDetails",
   },
   USER_ROLE: {
-    modelName: 'userRole',
-    tableName: 'UserRoles',
+    modelName: "userRole",
+    tableName: "UserRoles",
   },
 };
 
