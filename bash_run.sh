@@ -1,2 +1,2 @@
 npm run migrate
-npm start
+node main.js
