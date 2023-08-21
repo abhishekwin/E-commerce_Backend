@@ -10,6 +10,7 @@ const secretKey = process.env.JWT_SECRET_KEY;
 
 exports.initializeAdmin = async () => {
   try {
+    console.log("klnknsakn");
     const is_Role = await userRole.findOne({
       where: {
         role: "admin",
@@ -41,5 +42,6 @@ exports.initializeAdmin = async () => {
     return;
   } catch (error) {
     console.error("Error initializing admin user:", error);
+    return;
   }
 };

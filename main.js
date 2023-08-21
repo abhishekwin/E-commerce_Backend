@@ -1,18 +1,20 @@
 // app.js
 const express = require("express");
-const bodyParser = require("body-parser");
 const router = require("./src/routers/index.routes");
 const port = process.env.PORT;
 const app = express();
-app.use(bodyParser.json());
-require("./src/models/index");
+
+// Body parser
+
+app.use(express.json({ limit: "100kb" }));
+// app.use(express.urlencoded({ extended: false }));
 
 const cors = require("cors");
-const { initializeAdmin } = require("./middleware/admin");
+const db = require("./src/models/index");
 
 const startServer = async () => {
   try {
-    await initializeAdmin();
+    await db.authenticate();
     app.use(
       cors({
         origin: "*",
@@ -22,6 +24,8 @@ const startServer = async () => {
     app.listen(port, () => {
       console.log(`Server is running on http://localhost:${port}`);
     });
+    const { initializeAdmin, intilize_user_roles } = require("./middleware");
+    await intilize_user_roles();
   } catch (error) {
     console.error("Error starting the server:", error);
   }

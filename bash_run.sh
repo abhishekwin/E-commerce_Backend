@@ -1,2 +1,2 @@
 npm run migrate
-node main.js
+nodemon main.js

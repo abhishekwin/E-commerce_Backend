@@ -1,37 +1,18 @@
-const Product = require("../models/productdetails");
-const Seller = require("../models/user-details");
-const Category = require("../models/categoriess");
-const multer = require("multer");
-const { v2: cloudinary } = require("cloudinary");
-const express = require("express");
-// require("../models/associations");
 const dotenv = require("dotenv");
 dotenv.config();
+
+const {
+  models: { userDetail, ProductCategories, Product },
+} = require("../models");
+
 const adminEmail = process.env.AdminEmail;
 
 const jwt = require("jsonwebtoken");
 
 const secretKey = process.env.JWT_SECRET_KEY;
-// const storage = multer.diskStorage({
-//     destination: 'uploads/', // Specify the folder to store the uploaded images
-//     filename: (req, file, cb) => {
-//       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-//       const extension = path.extname(file.originalname);
-//       cb(null, file.fieldname + '-' + uniqueSuffix + extension);
-//     },
-//   });
-//   exports.upload = multer({ storage: storage });
-//   app.use(express.json());
 
-const app = express();
-exports.upload = multer({ dest: "uploads/" });
+const fileUpload = require("../config/fileConfig");
 
-// Cloudinary configuration
-cloudinary.config({
-  cloud_name: process.env.Cloud_Name,
-  api_key: process.env.API_KEY,
-  api_secret: process.env.API_SECRET,
-});
 exports.create = async (req, res) => {
   try {
     const { productName, description, category, price, inStock } = req.body;
@@ -41,17 +22,17 @@ exports.create = async (req, res) => {
       req.headers.authorization?.split(" ")[1];
     const decode = jwt.verify(token, secretKey);
 
-    const seller = await Seller.findOne({ where: { id: decode.userId } });
+    const seller = await userDetail.findOne({ where: { id: decode.userId } });
 
-    const categoryNm = await Category.findOne({
+    const categoryNm = await ProductCategories.findOne({
       where: { categoryName: category },
     });
 
     if (!categoryNm.categoryName) {
-      res.send({ message: "Invalid Category" });
+      res.send({ message: "Invalid ProductCategories" });
     }
     if (seller.isVerified) {
-      const result = await cloudinary.uploader.upload(req.file.path);
+      const result = await fileUpload.fileUpload(req.file.path);
 
       const payload = {
         productName,
@@ -85,9 +66,9 @@ exports.getsellerProduct = async (req, res) => {
       req.headers.authorization?.split(" ")[1];
 
     const decode = jwt.verify(token, secretKey);
-    const seller = await Seller.findOne({ where: { id: decode.userId } });
+    const seller = await userDetail.findOne({ where: { id: decode.userId } });
 
-    const userWithPosts = await Seller.findByPk(seller.id, {
+    const userWithPosts = await userDetail.findByPk(seller.id, {
       include: Product,
     });
 
@@ -145,7 +126,7 @@ exports.deleteProduct = async (req, res) => {
 
     const decode = jwt.verify(token, secretKey);
 
-    const seller = await Seller.findOne({ where: { id: decode.userId } });
+    const seller = await userDetail.findOne({ where: { id: decode.userId } });
     const deletePr = await Product.findOne({ where: { id: req.body.id } });
     if (adminEmail == seller.email || seller.id == decode.userId) {
       await deletePr.destroy();
