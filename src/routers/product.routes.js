@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const product = require("../controllers/product.controller");
-const uploads = require("../controllers/product.controller");
+const uploads = require("../config/fileConfig");
 
 router.use(
   "/uploadProduct",
