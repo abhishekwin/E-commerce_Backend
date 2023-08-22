@@ -1,6 +1,6 @@
 require("dotenv").config();
 const {
-  models: { userDetail },
+  models: { userDetail, userRole },
 } = require("../models");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
@@ -27,17 +27,23 @@ exports.create = async (req, res) => {
     if (oldUser) {
       return res.status(409).send("userDetail Already Exist. Please Login");
     }
-    const payload = { username, email, role };
-    let verified = true;
-    if (role == 2) {
-      verified = false;
+    const user_role = await userRole.findOne({
+      where: {
+        role: role,
+      },
+    });
+    ``
+    console.log(user_role.id);
+    const payload = { username, email, role: user_role.id, isVerified: false };
+    if (role == "seller") {
+      payload.isVerified = true;
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await userDetail.create({
       ...payload,
-      isVerified: verified,
       password: hashedPassword,
     });
+
     const jwtToken = jwt.sign(
       { userId: user.id, userRole: user.role },
       secretKey,

@@ -9,7 +9,7 @@ router.use(
   checkTokenExpiration,
   category.addCategory,
 );
-router.use("/Category",checkTokenExpiration, category.get_allCategory);
-router.use("/deleteCategory",checkTokenExpiration, category.deleteCategory);
+router.use("/Category", checkTokenExpiration, category.get_allCategory);
+router.use("/deleteCategory", checkTokenExpiration, category.deleteCategory);
 
 module.exports = router;

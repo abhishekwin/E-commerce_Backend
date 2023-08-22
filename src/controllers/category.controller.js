@@ -49,7 +49,6 @@ exports.get_allCategory = async (req, res) => {
 
 exports.deleteCategory = async (req, res) => {
   try {
-
     const categoryId = req.body.categoryName;
     const category = await ProductCategories.findOne({
       where: { categoryName: categoryId },
