@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 dotenv.config();
 const secretKey = process.env.JWT_SECRET_KEY;
+
 // Middleware function to check token expiration
 exports.checkTokenExpiration = async (req, res, next) => {
   const token =
