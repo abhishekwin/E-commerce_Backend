@@ -2,9 +2,6 @@ const {
   models: { userRole },
 } = require("../models");
 
-const secretKey = process.env.JWT_SECRET_KEY;
-const adminEmail = process.env.AdminEmail;
-
 exports.create = async (req, res) => {
   try {
     const { role } = req.body;

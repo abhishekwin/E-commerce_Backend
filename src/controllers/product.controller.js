@@ -1,6 +1,6 @@
 const dotenv = require("dotenv");
 dotenv.config();
-
+const { Op } = require("sequelize");
 const {
   models: { userDetail, ProductCategories, Product },
 } = require("../models");
@@ -87,7 +87,23 @@ exports.getsellerProduct = async (req, res) => {
 
 exports.get_products = async (req, res) => {
   try {
-    const result = await Product.findAll();
+    const filters = req.query; // Get query parameters from request
+    // Construct the filters using Sequelize's Op objects
+    const whereClause = {};
+    if (filters.category) {
+      whereClause.category = filters.category;
+    }
+    if (filters.priceMin && filters.priceMax) {
+      whereClause.price = {
+        [Op.between]: [filters.priceMin, filters.priceMax],
+      };
+    }
+    if (filters.inStock) {
+      whereClause.inStock = {
+        [Op.gte]: [filters.inStock],
+      };
+    }
+    const result = await Product.findAll({ where: whereClause });
     res.send({
       msg: "Product Fetched fetched!!",
       count: result.length,

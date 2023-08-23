@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 
 const secretKey = process.env.JWT_SECRET_KEY;
 const adminEmail = process.env.AdminEmail;
+const { sendResetPasswordEmail } = require("../validation/nodemailerConfig");
 
 // In-memory store for reset tokens and user data (for demonstration purposes)
 const resetTokens = {};
@@ -32,8 +33,6 @@ exports.create = async (req, res) => {
         role: role,
       },
     });
-    ``
-    console.log(user_role.id);
     const payload = { username, email, role: user_role.id, isVerified: false };
     if (role == "seller") {
       payload.isVerified = true;
@@ -67,11 +66,11 @@ exports.login = async (req, res) => {
       res.status(400).json({ msg: "Username and Email is required." });
     }
     const user = await userDetail.findOne({ where: { email } });
+
     if (!user) {
       return res.status(401).send({ error: "Unauthorized userDetail" });
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
-    console.log("======>11", user.password === password, isPasswordValid);
     if (!isPasswordValid) {
       res.status(401).json({ error: "Invalid Password" });
     } else {
@@ -141,6 +140,12 @@ exports.forget_Password = async (req, res) => {
 
     const token = crypto.randomBytes(20).toString("hex");
     resetTokens[email] = token;
+    try {
+      await sendResetPasswordEmail(email, token);
+    } catch (error) {
+      console.log(error);
+      return res.status(505).send({ msg: "server error!!" });
+    }
     return res.send({ msg: "sent reset password link in email.", token });
   } catch (error) {
     res.send("server error!!!").status(500);
