@@ -26,7 +26,7 @@ const startServer = async () => {
     });
     const { initializeAdmin, intilize_user_roles } = require("./middleware");
     await intilize_user_roles();
-    await initializeAdmin()
+    await initializeAdmin();
   } catch (error) {
     console.error("Error starting the server:", error);
   }

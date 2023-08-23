@@ -5,10 +5,6 @@ const {
 const dotenv = require("dotenv");
 dotenv.config();
 
-const jwt = require("jsonwebtoken");
-
-const secretKey = process.env.JWT_SECRET_KEY;
-
 const adminEmail = process.env.AdminEmail;
 const fileUpload = require(".././config/fileConfig");
 
