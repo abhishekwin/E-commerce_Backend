@@ -4,7 +4,7 @@ dotenv.config();
 const secretKey = process.env.JWT_SECRET_KEY;
 
 // Middleware function to check token expiration
-exports.checkTokenExpiration = async (req, res, next) => {
+exports.checkTokenExpirationAndVerification = async (req, res, next) => {
   const token =
     req.body.token ||
     req.query.token ||
@@ -17,7 +17,7 @@ exports.checkTokenExpiration = async (req, res, next) => {
   try {
     const decode = jwt.verify(token, secretKey); // Replace with your secret key
     const expirationTime = decode.exp;
-    console.log(Date.now(), expirationTime * 1000);
+
     if (Date.now() >= expirationTime * 1000) {
       return res.status(401).json({ message: "Token has expired" });
     }

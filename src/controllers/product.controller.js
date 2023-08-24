@@ -7,22 +7,14 @@ const {
 
 const adminEmail = process.env.AdminEmail;
 
-const jwt = require("jsonwebtoken");
-
-const secretKey = process.env.JWT_SECRET_KEY;
-
 const fileUpload = require("../config/fileConfig");
 
 exports.create = async (req, res) => {
   try {
     const { productName, description, category, price, inStock } = req.body;
-    const token =
-      req.body.token ||
-      req.query.token ||
-      req.headers.authorization?.split(" ")[1];
-    const decode = jwt.verify(token, secretKey);
 
-    const seller = await userDetail.findOne({ where: { id: decode.userId } });
+
+    const seller = await userDetail.findOne({ where: { id: req.decode.userId } });
 
     const categoryNm = await ProductCategories.findOne({
       where: { categoryName: category },
@@ -31,7 +23,9 @@ exports.create = async (req, res) => {
     if (!categoryNm.categoryName) {
       res.send({ message: "Invalid ProductCategories" });
     }
-    if (seller.isVerified) {
+    if (!seller.isVerified) {
+      res.send({ msg: "You are not a verified seller", status: "Failure" }).status(400);
+    }
       const result = await fileUpload.fileUpload(req.file.path);
 
       const payload = {
@@ -40,7 +34,7 @@ exports.create = async (req, res) => {
         category,
         price,
         inStock,
-        productImageUrl: result.secure_url,
+        productImage: result.secure_url,
         sellerId: seller.id,
       };
 
@@ -49,46 +43,37 @@ exports.create = async (req, res) => {
       res
         .send({ message: "Product save sucessfully", result: data })
         .status(200);
-    } else {
-      res.send("You are not a verified seller");
-    }
   } catch (err) {
     console.log(err, "err");
-    res.send("Error Adding Product");
+    res.send({ msg: "Internal Server Error", status: "Failure" }).status(505);
+
   }
 };
 
 exports.getsellerProduct = async (req, res) => {
   try {
-    const token =
-      req.body.token ||
-      req.query.token ||
-      req.headers.authorization?.split(" ")[1];
 
-    const decode = jwt.verify(token, secretKey);
-    const seller = await userDetail.findOne({ where: { id: decode.userId } });
-
-    const userWithPosts = await userDetail.findByPk(seller.id, {
-      include: Product,
-    });
-
-    if (userWithPosts.Products.length != 0) {
+    const seller = await userDetail.findOne({ where: { id: req.decode.userId } });
+    console.log("jns");
+    const userWithPosts = await Product.findAll({where:{sellerId: seller.id}});
+    console.log(userWithPosts);
+    if (userWithPosts.length != 0) {
       res.send({
         msg: "Product Fetched fetched!!",
-        data: userWithPosts.Products,
+        data: userWithPosts,
       });
     } else {
       res.send("You don't have any product");
     }
   } catch {
-    res.send("You don't have any product");
+    res.send({ msg: "Internal Server Error", status: "Failure" }).status(505);
+
   }
 };
 
 exports.get_products = async (req, res) => {
   try {
-    const filters = req.query; // Get query parameters from request
-    // Construct the filters using Sequelize's Op objects
+    const filters = req.query;
     const whereClause = {};
     if (filters.category) {
       whereClause.category = filters.category;
@@ -109,8 +94,8 @@ exports.get_products = async (req, res) => {
       count: result.length,
       result,
     });
-  } catch {
-    res.send("not fetchjed");
+  } catch (err) {
+   res.send({ msg: "Internal Server Error", status: "Failure" }).status(505);
   }
 };
 
@@ -135,16 +120,10 @@ exports.getProductByCategory = async (req, res) => {
 
 exports.deleteProduct = async (req, res) => {
   try {
-    const token =
-      req.body.token ||
-      req.query.token ||
-      req.headers.authorization?.split(" ")[1];
-
-    const decode = jwt.verify(token, secretKey);
-
-    const seller = await userDetail.findOne({ where: { id: decode.userId } });
+   
+    const seller = await userDetail.findOne({ where: { id: req.decode.userId } });
     const deletePr = await Product.findOne({ where: { id: req.body.id } });
-    if (adminEmail == seller.email || seller.id == decode.userId) {
+    if (adminEmail == seller.email || seller.id == req.decode.userId) {
       await deletePr.destroy();
     }
     res

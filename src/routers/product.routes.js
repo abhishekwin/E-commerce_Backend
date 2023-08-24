@@ -1,14 +1,22 @@
 const router = require("express").Router();
 const product = require("../controllers/product.controller");
 const uploads = require("../config/fileConfig");
+const cart = require("../controllers/cart.controller");
+const { checkTokenExpirationAndVerification } = require("../../middleware");
 
 router.use(
-  "/uploadProduct",
-  uploads.upload.single("productImageUrl"),
+
+  "/uploadProduct",checkTokenExpirationAndVerification,
+  uploads.upload.single("productImage"),
   product.create,
 );
 router.use("/getProducts", product.get_products);
-router.use("/getSellerProduct", product.getsellerProduct);
+router.use("/getSellerProduct", checkTokenExpirationAndVerification, product.getsellerProduct);
 router.use("/getProductByCategory", product.getProductByCategory);
-router.use("/deleteProduct", product.deleteProduct);
+router.use("/deleteProduct",checkTokenExpirationAndVerification, product.deleteProduct);
+router.use(
+  "/addCart",
+  // checkTokenExpirationAndVerification,
+  cart.handle_cart,
+);
 module.exports = router;
