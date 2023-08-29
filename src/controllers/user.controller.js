@@ -16,7 +16,7 @@ const resetTokens = {};
 exports.create = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    const role = req.body.role.toLowerCase(); 
+    const role = req.body.role.toLowerCase();
     if (!(email && username && password && role)) {
       return res.status(400).json({ msg: "Username and Email is required." });
     }
@@ -64,7 +64,7 @@ exports.login = async (req, res) => {
       res.status(400).json({ msg: "Username and Email is required." });
     }
     const user = await userDetail.findOne({ where: { email } });
-  
+
     if (!user) {
       return res.status(401).send({ error: "Unauthorized userDetail" });
     }
@@ -98,13 +98,17 @@ exports.get_users = async (req, res) => {
 
 exports.verifySeller = async (req, res) => {
   try {
-    const seller = await userDetail.findOne({ where: { email: req.body.email } });
+    const seller = await userDetail.findOne({
+      where: { email: req.body.email },
+    });
     if (seller.isVerified == true) {
       return res
         .status(404)
         .json({ message: "You are already a verified seller" });
     }
-    const admin = await userDetail.findOne({ where: { id: req.decode.userId } });
+    const admin = await userDetail.findOne({
+      where: { id: req.decode.userId },
+    });
     if (adminEmail == admin.email) {
       seller.isVerified = true;
       await seller.save();

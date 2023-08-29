@@ -1,56 +1,44 @@
 "use strict";
 const { Model } = require("sequelize");
-const {  TableConstants: { USER_DETAILS }, TableConstants,} = require("../constants/table.constant");
+const {
+  TableConstants: { USER_DETAILS },
+} = require("../constants/table.constant");
+
 module.exports = (sequelize, DataTypes) => {
   class addCart extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of DataTypes lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate({userDetail}) {
-      userDetail.hasOne(addCart, {
-        foreignKey: "userId",
-        as: "userDetail",
-        onDelete: 'cascade',
-        onUpdate: 'cascade'
-      });
-      addCart.belongsTo(userDetail,{
-        foreignKey: "id"
-      });
-      
+    static associate({ userDetail, Product }) {
+      addCart.belongsTo(userDetail, { foreignKey: "userId", allowNull: false });
+      addCart.belongsTo(Product, { foreignKey: "items" });
     }
   }
   addCart.init(
-    { 
+    {
       id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      unique: true,
-      primaryKey: true
-    },
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        unique: true,
+        primaryKey: true,
+      },
       items: {
-        type: DataTypes.ARRAY(DataTypes.JSONB),
-        // references: { model: "Products", key: "id" },
+        type: DataTypes.ARRAY(DataTypes.INTEGER),
         allowNull: true,
         defaultValue: [],
+        references: { model: "Product", key: "id" },
       },
-      userId: {   
+      userId: {
         type: DataTypes.BIGINT,
-        references: { model: USER_DETAILS.tableName, key: "userId" }
-       },
+        references: { model: "userDetail", key: "userId" },
+      },
       gst: {
-        type : DataTypes.FLOAT
+        type: DataTypes.FLOAT,
       },
-      quantity : {
-        type : DataTypes.INTEGER,
-        defaultValue : null
+      quantity: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
       },
-      totalAmount : {
-        type : DataTypes.INTEGER,
-        defaultValue : null
-      }
-
+      totalAmount: {
+        type: DataTypes.FLOAT,
+      },
     },
     {
       sequelize,

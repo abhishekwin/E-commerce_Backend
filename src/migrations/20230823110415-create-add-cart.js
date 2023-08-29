@@ -1,46 +1,44 @@
-'use strict';
+"use strict";
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('addCarts', {
+    await queryInterface.createTable("addCarts", {
       id: {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4,
         unique: true,
-        primaryKey: true
+        primaryKey: true,
       },
       items: {
-        type: Sequelize.ARRAY(Sequelize.JSONB),
-        // references: { model: "Products", key: "id" },
+        type: Sequelize.ARRAY(Sequelize.INTEGER),
         allowNull: true,
-        defaultValue: []
+        defaultValue: [],
       },
-      userId: { 
+      userId: {
         type: Sequelize.BIGINT,
-        references: { model: "UserDetails", key: "id" }
-       },
+        references: { model: "UserDetails", key: "id" },
+      },
       gst: {
-        type : Sequelize.FLOAT
+        type: Sequelize.FLOAT,
       },
-      quantity : {
-        type : Sequelize.INTEGER,
-        defaultValue : null
+      quantity: {
+        type: Sequelize.INTEGER,
+        defaultValue: null,
       },
-      totalAmount : {
-        type : Sequelize.INTEGER,
-        defaultValue : null
+      totalAmount: {
+        type: Sequelize.FLOAT,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
+        type: Sequelize.DATE,
+      },
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('addCarts');
-  }
+    await queryInterface.dropTable("addCarts");
+  },
 };
