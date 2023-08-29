@@ -8,10 +8,6 @@ const { UserRoles } = require("../constants/roles.constant");
 module.exports = (sequelize, DataTypes) => {
   class UserRole extends Model {
     static associate() {}
-
-    toJSON() {
-      return { ...this.get() };
-    }
   }
   UserRole.init(
     {

@@ -5,18 +5,22 @@ const cart = require("../controllers/cart.controller");
 const { checkTokenExpirationAndVerification } = require("../../middleware");
 
 router.use(
-
-  "/uploadProduct",checkTokenExpirationAndVerification,
+  "/uploadProduct",
+  checkTokenExpirationAndVerification,
   uploads.upload.single("productImage"),
   product.create,
 );
 router.use("/getProducts", product.get_products);
-router.use("/getSellerProduct", checkTokenExpirationAndVerification, product.getsellerProduct);
-router.use("/getProductByCategory", product.getProductByCategory);
-router.use("/deleteProduct",checkTokenExpirationAndVerification, product.deleteProduct);
 router.use(
-  "/addCart",
-  // checkTokenExpirationAndVerification,
-  cart.handle_cart,
+  "/getSellerProduct",
+  checkTokenExpirationAndVerification,
+  product.getsellerProduct,
 );
+router.use("/getProductByCategory", product.getProductByCategory);
+router.use(
+  "/deleteProduct",
+  checkTokenExpirationAndVerification,
+  product.deleteProduct,
+);
+router.use("/addCart", cart.handle_cart);
 module.exports = router;
