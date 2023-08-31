@@ -33,7 +33,7 @@ exports.create = async (req, res) => {
     const payload = {
       productName,  
       description,
-      category,
+      categoryId:categoryNm.categoryName,
       price,
       inStock,
       productImage: result.secure_url,
@@ -119,6 +119,7 @@ exports.get_product_details = async (req, res) => {
     isProductId.save()
     return res.status(200).send({data: [isProductId], "status":"success"})
   } catch (err) {
+    console.log(err);
     res.send({ msg: "Internal Server Error", status: "Failure" }).status(505);
   }
 };

@@ -30,6 +30,10 @@ module.exports = {
       productImage: {
         type: Sequelize.STRING,
       },
+      views: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
@@ -43,5 +47,4 @@ module.exports = {
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable("Products");
   },
-
 };
