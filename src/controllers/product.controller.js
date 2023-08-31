@@ -6,7 +6,6 @@ const {
 } = require("../models");
 
 const adminEmail = process.env.AdminEmail;
-
 const fileUpload = require("../config/fileConfig");
 
 exports.create = async (req, res) => {
@@ -32,7 +31,7 @@ exports.create = async (req, res) => {
     const result = await fileUpload.fileUpload(req.file.path);
 
     const payload = {
-      productName,
+      productName,  
       description,
       category,
       price,
@@ -46,9 +45,7 @@ exports.create = async (req, res) => {
     res.send({ message: "Product save sucessfully", result: data }).status(200);
   } catch (err) {
     console.log(err, "err");
-    return res
-      .send({ msg: "Internal Server Error", status: "Failure" })
-      .status(505);
+    return res.send({ msg: "Internal Server Error", status: "Failure" }).status(505);
   }
 };
 
@@ -83,9 +80,9 @@ exports.get_products = async (req, res) => {
     if (filters.productName) {
       whereClause.productName = filters.productName;
       const result = await Product.findOne({ where: whereClause });
-      result.views += 1;
-      result.save();
-      return res.status(200).send({ data: result, status: "success" });
+      result.views +=1
+      result.save()
+      return res.status(200).send({data: result, "status":"success"})
     }
     if (filters.priceMin && filters.priceMax) {
       whereClause.price = {
@@ -98,19 +95,17 @@ exports.get_products = async (req, res) => {
       };
     }
 
-    let result;
+    let result
     try {
-      result = await Product.findAll({
-        order: [["views", "DESC"]],
-        where: whereClause,
-      });
+     result =  await Product.findAll({ order: [['views', 'DESC']],
+      where: whereClause });
     } catch (error) {
       console.log(error);
     }
     res.send({
       msg: "Product Fetched fetched!!",
       count: result.length,
-      data: result,
+      data : result,
     });
   } catch (err) {
     res.send({ msg: "Internal Server Error", status: "Failure" }).status(505);
