@@ -23,7 +23,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.ARRAY(DataTypes.INTEGER),
         allowNull: true,
         defaultValue: [],
-        references: { model: "Product", key: "id" },
+        references: { model: "Products", key: "id" },
       },
       userId: {
         type: DataTypes.BIGINT,

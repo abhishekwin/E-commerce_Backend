@@ -12,8 +12,9 @@ module.exports = {
       items: {
         type: Sequelize.ARRAY(Sequelize.INTEGER),
         allowNull: true,
-        defaultValue: [],
-      },
+        defaultValue: []
+      }
+      ,
       userId: {
         type: Sequelize.BIGINT,
         references: { model: "UserDetails", key: "id" },
@@ -26,7 +27,7 @@ module.exports = {
         defaultValue: null,
       },
       totalAmount: {
-        type: Sequelize.FLOAT,
+        type: Sequelize.FLOAT
       },
       createdAt: {
         allowNull: false,
