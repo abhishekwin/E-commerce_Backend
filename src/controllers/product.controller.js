@@ -77,13 +77,6 @@ exports.get_products = async (req, res) => {
     if (filters.category) {
       whereClause.category = filters.category;
     }
-    if (filters.productName) {
-      whereClause.productName = filters.productName;
-      const result = await Product.findOne({ where: whereClause });
-      result.views +=1
-      result.save()
-      return res.status(200).send({data: result, "status":"success"})
-    }
     if (filters.priceMin && filters.priceMax) {
       whereClause.price = {
         [Op.between]: [filters.priceMin, filters.priceMax],
@@ -97,7 +90,7 @@ exports.get_products = async (req, res) => {
 
     let result
     try {
-     result =  await Product.findAll({ order: [['views', 'DESC']],
+     result =  await Product.findAll({ attributes:["productName","price","views","productImage"],order: [['views', 'DESC']],
       where: whereClause });
     } catch (error) {
       console.log(error);
@@ -107,6 +100,24 @@ exports.get_products = async (req, res) => {
       count: result.length,
       data : result,
     });
+  } catch (err) {
+    res.send({ msg: "Internal Server Error", status: "Failure" }).status(505);
+  }
+};
+
+exports.get_product_details = async (req, res) => {
+  try {
+    let productId = req.params.id;
+    if (!productId) {
+      return res.status(400).send({ msg:"productId is required.","status":"Failure" });
+    }
+    const isProductId = await Product.findOne({ where: {id:productId} });
+    if (!isProductId) {
+      return res.status(200).send({ data: [], msg:"Product is not available.","status":"success" });
+    }
+    isProductId.views +=1
+    isProductId.save()
+    return res.status(200).send({data: [isProductId], "status":"success"})
   } catch (err) {
     res.send({ msg: "Internal Server Error", status: "Failure" }).status(505);
   }
