@@ -11,6 +11,7 @@ router.use(
   product.create,
 );
 router.use("/getProducts", product.get_products);
+router.use("/products/:id", product.get_product_details);
 router.use(
   "/getSellerProduct",
   checkTokenExpirationAndVerification,

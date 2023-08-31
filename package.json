@@ -38,7 +38,8 @@
     "nodemon": "^3.0.1",
     "op": "^0.0.6",
     "pg": "^8.11.2",
-    "sequelize": "^6.32.1"
+    "sequelize": "^6.32.1",
+    "swagger-ui-express": "^5.0.0"
   },
   "devDependencies": {
     "babel-register": "^6.26.0",

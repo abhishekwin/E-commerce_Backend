@@ -16,7 +16,7 @@ exports.sendResetPasswordEmail = async (recipientEmail, resetToken) => {
     subject: "Password Reset Request",
     html: `
         <p>Click the following link to reset your password:</p>
-        <a href="http://yourwebsite.com/reset-password?token=${resetToken}">Reset Password</a>
+        <a href="https://e-commerce-fe-beta.vercel.app/resetPassword?token=${resetToken}">Reset Password</a>
       `,
   };
   try {
