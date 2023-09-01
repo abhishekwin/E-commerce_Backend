@@ -90,7 +90,7 @@ exports.get_products = async (req, res) => {
 
     let result
     try {
-     result =  await Product.findAll({ attributes:["productName","price","views","productImage"],order: [['views', 'DESC']],
+     result =  await Product.findAll({ attributes:["id","productName","price","views","productImage","categoryId","inStock"],order: [['views', 'DESC']],
       where: whereClause });
     } catch (error) {
       console.log(error);
