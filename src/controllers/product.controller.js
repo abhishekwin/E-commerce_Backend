@@ -23,22 +23,23 @@ exports.create = async (req, res) => {
     if (!categoryNm) {
       return res.status(400).send({ message: "Invalid ProductCategories" });
     }
-    if (!seller.isVerified) {
+    if (!seller.isSeller) {
       res
-        .send({ msg: "You are not a verified seller", status: "Failure" })
-        .status(400);
+      .send({ msg: "You are not a verified seller", status: "Failure" })
+      .status(400);
     }
     const result = await fileUpload.fileUpload(req.file.path);
-
+    
     const payload = {
       productName,  
       description,
-      categoryId:categoryNm.categoryName,
+      categoryId:categoryNm.id,
       price,
       inStock,
       productImage: result.secure_url,
       sellerId: seller.id,
     };
+    console.log(payload);
 
     data = await Product.create(payload);
 

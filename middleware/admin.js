@@ -8,6 +8,12 @@ const config = process.env;
 const jwt = require("jsonwebtoken");
 const secretKey = process.env.JWT_SECRET_KEY;
 
+
+exports.hash_password = async ( password ) =>{
+  const hashedPassword = await bcrypt.hash(`${password}`, 10);
+  return hashedPassword
+}
+
 exports.initializeAdmin = async () => {
   try {
     const is_Role = await userRole.findOne({
@@ -26,12 +32,12 @@ exports.initializeAdmin = async () => {
         username: config.AdminName,
         email: config.AdminEmail,
         role: is_Role.id,
-        isVerified: true,
+        isSeller: true,
       };
-      const hashedPassword = await bcrypt.hash(`${config.AdminPassword}`, 10);
+
       const user = await userDetail.create({
         ...payload,
-        password: hashedPassword,
+        password: hash_password(config.AdminPassword),
       });
       jwt.sign({ userId: user.id, role: user.role }, secretKey);
       console.log("Admin user created successfully.");

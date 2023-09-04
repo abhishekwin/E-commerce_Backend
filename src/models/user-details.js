@@ -6,16 +6,18 @@ const {
 } = require("../constants/table.constant");
 module.exports = (sequelize, DataTypes) => {
   class UserDetail extends Model {
-    static associate({ userRole }) {
+    static associate(models) {
+      const { userRole, Product,addCart} = models
       this.belongsTo(userRole, {
-        foreignKey: "id",
-        as: "userRoles",
+        foreignKey: "role",
+        // as: "userRoles",
         allowNull: false,
         onDelete: "cascade",
         onUpdate: "cascade",
       });
+      this.hasMany(Product, {foreignKey:"sellerId"})
+      this.hasMany(addCart, {foreignKey:"userId"})
     }
-
     toJSON() {
       return { ...this.get() };
     }
@@ -25,8 +27,9 @@ module.exports = (sequelize, DataTypes) => {
       username: DataTypes.STRING,
       email: DataTypes.STRING,
       password: DataTypes.STRING,
-      isVerified: {
+      isSeller: {
         type: DataTypes.BOOLEAN,
+        allowNull: false,
       },
       role: {
         type: DataTypes.BIGINT,

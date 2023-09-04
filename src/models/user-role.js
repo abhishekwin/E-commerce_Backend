@@ -22,7 +22,6 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: UserRoles.USER,
         unique: true,
       },
-      isActive: DataTypes.BOOLEAN,
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
