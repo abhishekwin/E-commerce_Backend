@@ -6,9 +6,9 @@ const {
 
 module.exports = (sequelize, DataTypes) => {
   class addCart extends Model {
-    static associate({ userDetail, Product }) {
-      addCart.belongsTo(userDetail, { foreignKey: "userId", allowNull: false });
-      addCart.belongsTo(Product, { foreignKey: "items" });
+    static associate(models) {
+      this.belongsTo(models.userDetail, { foreignKey: "userId", allowNull: true});
+      this.belongsTo(models.Product, { foreignKey: "items" });
     }
   }
   addCart.init(
@@ -26,7 +26,8 @@ module.exports = (sequelize, DataTypes) => {
       },
       userId: {
         type: DataTypes.BIGINT,
-        references: { model: "userDetail", key: "userId" },
+        references: { model: "UserDetails", key: "id" },
+        allowNull:true
       },
       gst: {
         type: DataTypes.FLOAT,

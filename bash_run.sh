@@ -1,2 +1,3 @@
 npm run migrate
-nodemon main.js
+npx sequelize-cli db:seed:all
+npm start

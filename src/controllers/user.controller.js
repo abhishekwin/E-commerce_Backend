@@ -34,7 +34,7 @@ exports.create = async (req, res) => {
         role: role,
       },
     });
-    const payload = { username, email, role: user_role.id, isVerified: false };
+    const payload = { username, email, role: user_role.id, isSeller: false };
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await userDetail.create({
       ...payload,
@@ -61,27 +61,28 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email) {
-      res.status(400).json({ msg: "Username and Email is required." });
+      return res.status(400).json({ msg: "Username and Email is required." });
     }
-    const user = await userDetail.findOne({ where: { email } });
+    const user = await userDetail.findOne({  include: [ { model: userRole } ], where: { email } });
 
     if (!user) {
       return res.status(401).send({ error: "Unauthorized userDetail" });
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      res.status(401).json({ error: "Invalid Password" });
-    } else {
-      const jwtToken = jwt.sign(
-        { userId: user.id, role: user.role },
-        secretKey,
-        {
-          expiresIn: "1h",
-        },
-      );
-      res.send({ message: "Login sucessfully", jwtToken }).status(200);
-    }
+      return res.status(401).json({ error: "Invalid Password" });
+    } 
+
+    const jwtToken = jwt.sign(
+      { userId: user.id, role: user.userRole.role},
+      secretKey,
+      {
+        expiresIn: "1h",
+      },
+    );
+      return res.send({ message: "Login sucessfully", jwtToken }).status(200);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "Error logging in user" });
   }
 };
@@ -101,7 +102,7 @@ exports.verifySeller = async (req, res) => {
     const seller = await userDetail.findOne({
       where: { email: req.body.email },
     });
-    if (seller.isVerified == true) {
+    if (seller.isSeller == true) {
       return res
         .status(404)
         .json({ message: "You are already a verified seller" });
@@ -110,7 +111,7 @@ exports.verifySeller = async (req, res) => {
       where: { id: req.decode.userId },
     });
     if (adminEmail == admin.email) {
-      seller.isVerified = true;
+      seller.isSeller = true;
       await seller.save();
       res.send({ msg: "Seller verified succesfuly", seller });
     } else {

@@ -17,7 +17,7 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
-      isVerified: {
+      isSeller: {
         type: Sequelize.BOOLEAN,
       },
       password: { type: Sequelize.STRING },
