@@ -6,10 +6,10 @@ const secretKey = process.env.JWT_SECRET_KEY;
 // Middleware function to check token expiration
 exports.checkTokenExpirationAndVerification = async (req, res, next) => {
   const token =
-    req.body.token ||
-    req.query.token ||
-    req.headers.authorization?.split(" ")[1]; // Assuming token is sent in the "Authorization" header
-
+  req.body.token ||
+  req.query.token ||
+  req.headers.authorization?.split(" ")[1]; // Assuming token is sent in the "Authorization" header
+  
   if (!token) {
     return res.status(401).json({ message: "Token missing" });
   }
@@ -22,9 +22,11 @@ exports.checkTokenExpirationAndVerification = async (req, res, next) => {
       return res.status(401).json({ message: "Token has expired" });
     }
     req.decode = decode;
+    req.resetPasswordToken = token;
+
     // Token is valid, continue to the next middleware or route handler
     next();
   } catch (error) {
-    return res.status(401).json({ message: "Token is invalid" });
+    return res.status(401).json({ message: `${error}`  });
   }
 };

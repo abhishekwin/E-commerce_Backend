@@ -109,6 +109,7 @@ exports.get_products = async (req, res) => {
 exports.get_product_details = async (req, res) => {
   try {
     let productId = req.params.id;
+    console.log(req.body);
     if (!productId) {
       return res.status(400).send({ msg:"productId is required.","status":"Failure" });
     }

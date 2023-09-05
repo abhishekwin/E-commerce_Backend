@@ -1,6 +1,6 @@
 # npx sequelize db:migrate:undo:all --env production
 
-npm i
+# npm i
 npm run migrate
 npx sequelize-cli db:seed:all
-node main.js
+nodemon main.js

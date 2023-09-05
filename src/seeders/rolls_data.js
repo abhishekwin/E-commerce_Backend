@@ -1,7 +1,15 @@
 'use strict';
 
+const {
+  models: { userRole },
+} = require("../models");
 module.exports = {
-  up: (queryInterface, Sequelize) => {
+  up: async (queryInterface, Sequelize) => {
+
+  try {
+    const existingUserRole = await userRole.findAll();
+    if (existingUserRole.length === 0) {
+
     return queryInterface.bulkInsert('UserRoles', [
       {
         role: 'admin',
@@ -19,6 +27,13 @@ module.exports = {
         updatedAt: new Date(),
       }
     ]);
+
+  } else {
+    console.log('Data already exists in the UserRole table. Skipping seeding.');
+  }
+} catch (error) {
+  console.error('Error seeding users:', error);
+}
   },
 
   down: (queryInterface, Sequelize) => {
