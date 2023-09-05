@@ -26,6 +26,10 @@ module.exports = {
         allowNull: false,
         references: { model: "UserRoles", key: "id" },
       },
+      resetPasswordToken: {
+        type: Sequelize.STRING,
+        defaultValue: null,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,

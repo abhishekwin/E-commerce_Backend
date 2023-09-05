@@ -66,7 +66,7 @@ exports.login = async (req, res) => {
     const user = await userDetail.findOne({  include: [ { model: userRole } ], where: { email } });
 
     if (!user) {
-      return res.status(401).send({ error: "Unauthorized userDetail" });
+    return res.status(401).send({ error: "Unauthorized user!!!!" });
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
@@ -128,50 +128,60 @@ exports.forget_Password = async (req, res) => {
     if (!email) {
       return res.status(400).json({ msg: "Email is required." });
     }
-    const oldUser = await userDetail.findOne({ where: { email: email } });
-    if (!oldUser) {
+    const user = await userDetail.findOne({ where: { email: email } });
+    if (!user) {
       return res.status(404).json({ message: "Email Not Exist." });
     }
     // Generate a reset token
+    const jwtToken = jwt.sign(
+      { userId: user.id, userRole: user.role },
+      secretKey,
+      {
+        expiresIn: "1h",
+      },
+    );
+    console.log(jwtToken);
 
-    const token = crypto.randomBytes(20).toString("hex");
-    resetTokens[email] = token;
+    user.resetPasswordToken = jwtToken;
+    await user.save()
     try {
-      await sendResetPasswordEmail(email, token);
+      await sendResetPasswordEmail(email, jwtToken);
     } catch (error) {
-      console.log(error);
-      return res.status(505).send({ msg: "server error!!" });
+      return res.status(505).send({ msg: `${error}` });
     }
-    return res.send({ msg: "sent reset password link in email.", token });
+    return res.send({ msg: "sent reset password link in email.", jwtToken });
   } catch (error) {
-    res.send("server error!!!").status(500);
+    res.send({msg:`${error}`}).status(500);
   }
 };
 
-exports.reset_Password = async (req, res) => {
+exports.reset_Password = async ( req, res) => {
   try {
-    const { email, token, newPassword } = req.body;
 
-    if (!(email && token && newPassword)) {
-      return res.status(400).json({ msg: "All Fields are required." });
+    const {newPassword, confirmPassword} = req.body
+    if (!newPassword && !confirmPassword) {
+      return res.status(400).json({ msg: "newPassword confirmPassword are valid" });
     }
-    const user = await userDetail.findOne({ where: { email: email } });
+    if (!(newPassword === confirmPassword)){
+      return res.status(400).json({ msg: "Password are not matched with confirmPassword." });
+    }
+    const user = await userDetail.findOne({ where: { id: req.decode.userId } });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    if (resetTokens[email] !== token) {
-      return res.status(400).json({ message: "Invalid token" });
+    
+    if(!(user.resetPasswordToken === req.resetPasswordToken)){
+      return res.status(200).json({ message: "Password Already changed!!" });
     }
 
-    // Update the user's password (in-memory update for demonstration)
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword;
+    user.password = hashedPassword
+    user.resetPasswordToken = null
     user.save();
-    delete resetTokens[email];
 
-    res.json({ message: "Password reset successful" });
+    return res.json({ message: "Password reset successful" });
   } catch (error) {
-    res.send("server error!!!").status(500);
+    console.log(error);
+    res.send({msg :"server error!!!"}).status(500);
   }
 };

@@ -10,7 +10,6 @@ module.exports = (sequelize, DataTypes) => {
       const { userRole, Product,addCart} = models
       this.belongsTo(userRole, {
         foreignKey: "role",
-        // as: "userRoles",
         allowNull: false,
         onDelete: "cascade",
         onUpdate: "cascade",
@@ -36,6 +35,10 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         references: { model: USER_ROLE.tableName, key: "id" },
       },
+      resetPasswordToken: {
+        type: DataTypes.STRING,
+        defaultValue: null,
+      }
     },
     {
       sequelize,

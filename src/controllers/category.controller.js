@@ -14,6 +14,10 @@ exports.addCategory = async (req, res) => {
     if (!categoryName) {
       return res.status(400).json({ msg: "Pass Required Details." });
     }
+    const isCategoryName = await ProductCategories.findOne({ where: { categoryName: categoryName } });
+    if (isCategoryName) {
+      return res.status(200).json({ msg: "CategoryName is Alreay Exist."});
+    }
     const admn = await userDetail.findOne({ where: { id: req.decode.userId } });
     if (adminEmail != admn.email) {
       return res.status(409).send("You are not a Admin");
