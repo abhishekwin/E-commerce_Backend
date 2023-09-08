@@ -4,12 +4,8 @@ dotenv.config();
 const secretKey = process.env.JWT_SECRET_KEY;
 
 // Middleware function to check token expiration
-exports.checkTokenExpirationAndVerification = async (req, res, next) => {
-  const token =
-  req.body.token ||
-  req.query.token ||
-  req.headers.authorization?.split(" ")[1]; // Assuming token is sent in the "Authorization" header
-  
+const checkUserAuth = async (req, res, next, token) => {
+
   if (!token) {
     return res.status(401).json({ message: "Token missing" });
   }
@@ -27,6 +23,21 @@ exports.checkTokenExpirationAndVerification = async (req, res, next) => {
     // Token is valid, continue to the next middleware or route handler
     next();
   } catch (error) {
-    return res.status(401).json({ message: `${error}`  });
+    return res.status(401).json({ message: `${error}` });
   }
 };
+
+exports.checkTokenExpirationAndVerification = async(req, res, next) =>{
+  const token =
+  req.body.token ||
+  req.query.token ||
+  req.headers.authorization?.split(" ")[1]; // Assuming token is sent in the "Authorization" header
+
+  if (req.baseUrl === '/api/product/addCart'){
+    if(!token){
+      return next()
+    }
+    return checkUserAuth(req, res, next, token)
+  }
+  return checkUserAuth(req, res, next, token)
+}

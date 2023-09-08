@@ -23,5 +23,10 @@ router.use(
   checkTokenExpirationAndVerification,
   product.deleteProduct,
 );
-router.use("/addCart", cart.handle_cart);
+
+//add cart router
+
+router.use("/addCart", checkTokenExpirationAndVerification, cart.handle_cart);
+router.use("/deleteCartProducts", cart.remove_product_in_cart);
+router.use("/getAddCart", cart.getcart);
 module.exports = router;

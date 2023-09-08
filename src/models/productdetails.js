@@ -4,12 +4,11 @@ const { Model, Sequelize } = require("sequelize");
 
 module.exports = (sequelize, DataTypes) => {
   class Product extends Model {
-
     static associate(models) {
-      const { userDetail,ProductCategories, addCart} = models
-      this.belongsTo(userDetail, {foreignKey:"sellerId"})
-      this.belongsTo(ProductCategories, {foreignKey:"categoryId"})
-      this.hasMany(addCart)
+      const { userDetail, ProductCategories, addCart } = models;
+      this.belongsTo(userDetail, { foreignKey: "sellerId" });
+      this.belongsTo(ProductCategories, { foreignKey: "categoryId" });
+      this.hasMany(addCart, { foreignKey: "items" });
     }
   }
   Product.init(
@@ -24,12 +23,12 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       description: {
-        type: DataTypes.STRING
+        type: DataTypes.STRING,
       },
       categoryId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references:{model:"productCategories",key:'id'}
+        references: { model: "productCategories", key: "id" },
       },
       price: {
         type: DataTypes.INTEGER,
@@ -42,13 +41,17 @@ module.exports = (sequelize, DataTypes) => {
       sellerId: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        references:{model:"UserDetails",key:'id'}
+        references: { model: "UserDetails", key: "id" },
       },
       productImage: {
         type: DataTypes.STRING,
         allowNull: false,
       },
       views: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
+      discount: {
         type: DataTypes.INTEGER,
         defaultValue: 0,
       },

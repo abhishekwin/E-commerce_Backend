@@ -3,15 +3,11 @@ const {
   models: { userDetail, userRole },
 } = require("../models");
 const bcrypt = require("bcrypt");
-const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 
 const secretKey = process.env.JWT_SECRET_KEY;
 const adminEmail = process.env.AdminEmail;
 const { sendResetPasswordEmail } = require("../validation/nodemailerConfig");
-
-// In-memory store for reset tokens and user data (for demonstration purposes)
-const resetTokens = {};
 
 exports.create = async (req, res) => {
   try {
@@ -63,24 +59,27 @@ exports.login = async (req, res) => {
     if (!email) {
       return res.status(400).json({ msg: "Username and Email is required." });
     }
-    const user = await userDetail.findOne({  include: [ { model: userRole } ], where: { email } });
+    const user = await userDetail.findOne({
+      include: [{ model: userRole }],
+      where: { email },
+    });
 
     if (!user) {
-    return res.status(401).send({ error: "Unauthorized user!!!!" });
+      return res.status(401).send({ error: "Unauthorized user!!!!" });
     }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid Password" });
-    } 
+    }
 
     const jwtToken = jwt.sign(
-      { userId: user.id, role: user.userRole.role},
+      { userId: user.id, role: user.userRole.role },
       secretKey,
       {
         expiresIn: "1h",
       },
     );
-      return res.send({ message: "Login sucessfully", jwtToken }).status(200);
+    return res.send({ message: "Login sucessfully", jwtToken }).status(200);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Error logging in user" });
@@ -143,45 +142,46 @@ exports.forget_Password = async (req, res) => {
     console.log(jwtToken);
 
     user.resetPasswordToken = jwtToken;
-    await user.save()
+    await user.save();
     try {
       await sendResetPasswordEmail(email, jwtToken);
     } catch (error) {
       return res.status(505).send({ msg: `${error}` });
     }
-    return res.send({ msg: "sent reset password link in email.", jwtToken });
+    return res.send({ msg: "Sent Reset password link in email.", jwtToken });
   } catch (error) {
-    res.send({msg:`${error}`}).status(500);
+    res.send({ msg: `${error}` }).status(500);
   }
 };
 
-exports.reset_Password = async ( req, res) => {
+exports.reset_Password = async (req, res) => {
   try {
-
-    const {newPassword, confirmPassword} = req.body
+    const { newPassword, confirmPassword } = req.body;
     if (!newPassword && !confirmPassword) {
-      return res.status(400).json({ msg: "newPassword confirmPassword are valid" });
+      return res.status(400).json({ msg: "Please Provide the Required Fields." });
     }
-    if (!(newPassword === confirmPassword)){
-      return res.status(400).json({ msg: "Password are not matched with confirmPassword." });
+    if (!(newPassword === confirmPassword)) {
+      return res
+        .status(400)
+        .json({ msg: "New Password are not matched with Confirm Password." });
     }
     const user = await userDetail.findOne({ where: { id: req.decode.userId } });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    
-    if(!(user.resetPasswordToken === req.resetPasswordToken)){
-      return res.status(200).json({ message: "Password Already changed!!" });
+
+    if (!(user.resetPasswordToken === req.resetPasswordToken)) {
+      return res.status(401).json({ message: "Password Already changed!!" });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    user.password = hashedPassword
-    user.resetPasswordToken = null
+    user.password = hashedPassword;
+    user.resetPasswordToken = null;
     user.save();
 
-    return res.json({ message: "Password reset successful" });
+    return res.json({ message: "Password Reset Successfully." });
   } catch (error) {
     console.log(error);
-    res.send({msg :"server error!!!"}).status(500);
+    res.send({ msg: `${error}` }).status(500);
   }
 };
