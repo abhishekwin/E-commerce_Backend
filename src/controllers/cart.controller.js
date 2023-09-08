@@ -11,6 +11,7 @@ exports.handle_cart = async (req, res) => {
     let istempId;
     
     let userId = req.decode?.userId?req.decode.userId:null;
+    console.log(userId);
     let tempId =  req.body.tempId || req.query.tempId ;
     let { productName, quantity } = req.body;
 
@@ -54,7 +55,7 @@ exports.handle_cart = async (req, res) => {
       istempId = await addCart.findOne({
         where:  { id: tempId }
       });
-
+      istempId.userId = userId ? userId : null;
       if (
         !istempId.items.length ||
         !istempId.items.includes(`${isProduct.id}`)

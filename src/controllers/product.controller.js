@@ -105,6 +105,7 @@ exports.get_products = async (req, res) => {
           "inStock",
           "discount",
         ],
+        include:[{model:ProductCategories, attributes : ["categoryName"]}],
         order: [["views", "DESC"]],
         where: whereClause,
       });
