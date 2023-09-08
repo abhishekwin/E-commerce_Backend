@@ -7,15 +7,15 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class UserDetail extends Model {
     static associate(models) {
-      const { userRole, Product,addCart} = models
+      const { userRole, Product, addCart } = models;
       this.belongsTo(userRole, {
         foreignKey: "role",
         allowNull: false,
         onDelete: "cascade",
         onUpdate: "cascade",
       });
-      this.hasMany(Product, {foreignKey:"sellerId"})
-      this.hasMany(addCart, {foreignKey:"userId"})
+      this.hasMany(Product, { foreignKey: "sellerId" });
+      this.hasMany(addCart, { foreignKey: "userId" });
     }
     toJSON() {
       return { ...this.get() };
@@ -38,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
       resetPasswordToken: {
         type: DataTypes.STRING,
         defaultValue: null,
-      }
+      },
     },
     {
       sequelize,

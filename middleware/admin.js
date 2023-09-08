@@ -8,11 +8,10 @@ const config = process.env;
 const jwt = require("jsonwebtoken");
 const secretKey = process.env.JWT_SECRET_KEY;
 
-
-const hash_password = async ( password ) =>{
+const hash_password = async (password) => {
   const hashedPassword = await bcrypt.hash(`${password}`, 10);
-  return hashedPassword
-}
+  return hashedPassword;
+};
 
 const initializeAdmin = async () => {
   try {
@@ -24,7 +23,7 @@ const initializeAdmin = async () => {
     if (!is_Role) {
       return;
     }
-    
+
     const isAdmin = await userDetail.findOne({
       where: { email: config.AdminEmail },
     });
@@ -52,4 +51,4 @@ const initializeAdmin = async () => {
   }
 };
 
-module.exports = {hash_password, initializeAdmin}
+module.exports = { hash_password, initializeAdmin };

@@ -10,11 +10,10 @@ module.exports = {
         primaryKey: true,
       },
       items: {
-        type: Sequelize.ARRAY(Sequelize.INTEGER),
+        type: Sequelize.ARRAY(Sequelize.BIGINT),
         allowNull: true,
-        defaultValue: []
-      }
-      ,
+        defaultValue: [],
+      },
       userId: {
         type: Sequelize.BIGINT,
         references: { model: "UserDetails", key: "id" },
@@ -22,12 +21,20 @@ module.exports = {
       gst: {
         type: Sequelize.FLOAT,
       },
+      discount: {
+        type: Sequelize.INTEGER,
+        defaultValue: 0,
+      },
+      deliveryCharges: {
+        type: Sequelize.STRING,
+        defaultValue: "FREE",
+      },
       quantity: {
         type: Sequelize.INTEGER,
         defaultValue: null,
       },
       totalAmount: {
-        type: Sequelize.FLOAT
+        type: Sequelize.FLOAT,
       },
       createdAt: {
         allowNull: false,

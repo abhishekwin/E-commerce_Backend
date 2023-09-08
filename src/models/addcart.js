@@ -7,7 +7,10 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class addCart extends Model {
     static associate(models) {
-      this.belongsTo(models.userDetail, { foreignKey: "userId", allowNull: true});
+      this.belongsTo(models.userDetail, {
+        foreignKey: "userId",
+        allowNull: true,
+      });
       this.belongsTo(models.Product, { foreignKey: "items" });
     }
   }
@@ -20,17 +23,28 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
       },
       items: {
-        type: DataTypes.ARRAY(DataTypes.INTEGER),
+        type: DataTypes.ARRAY(DataTypes.BIGINT),
         allowNull: true,
         defaultValue: [],
       },
       userId: {
         type: DataTypes.BIGINT,
         references: { model: "UserDetails", key: "id" },
-        allowNull:true
+        allowNull: true,
       },
       gst: {
         type: DataTypes.FLOAT,
+      },
+      discount: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+        get() {
+          return "₹ " + this.getDataValue("discount");
+        },
+      },
+      deliveryCharges: {
+        type: DataTypes.STRING,
+        defaultValue: "FREE",
       },
       quantity: {
         type: DataTypes.INTEGER,

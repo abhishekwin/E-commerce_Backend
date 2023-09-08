@@ -10,7 +10,8 @@ const fileUpload = require("../config/fileConfig");
 
 exports.create = async (req, res) => {
   try {
-    const { productName, description, category, price, inStock } = req.body;
+    const { productName, description, category, price, inStock, discount } =
+      req.body;
 
     const seller = await userDetail.findOne({
       where: { id: req.decode.userId },
@@ -25,28 +26,30 @@ exports.create = async (req, res) => {
     }
     if (!seller.isSeller) {
       res
-      .send({ msg: "You are not a verified seller", status: "Failure" })
-      .status(400);
+        .send({ msg: "You are not a verified seller", status: "Failure" })
+        .status(400);
     }
     const result = await fileUpload.fileUpload(req.file.path);
-    
+
     const payload = {
-      productName,  
+      productName,
       description,
-      categoryId:categoryNm.id,
+      categoryId: categoryNm.id,
       price,
       inStock,
       productImage: result.secure_url,
+      discount: discount,
       sellerId: seller.id,
     };
-    console.log(payload);
 
     data = await Product.create(payload);
 
     res.send({ message: "Product save sucessfully", result: data }).status(200);
   } catch (err) {
     console.log(err, "err");
-    return res.send({ msg: "Internal Server Error", status: "Failure" }).status(505);
+    return res
+      .send({ msg: "Internal Server Error", status: "Failure" })
+      .status(505);
   }
 };
 
@@ -89,17 +92,29 @@ exports.get_products = async (req, res) => {
       };
     }
 
-    let result
+    let result;
     try {
-     result =  await Product.findAll({ attributes:["id","productName","price","views","productImage","categoryId","inStock"],order: [['views', 'DESC']],
-      where: whereClause });
+      result = await Product.findAll({
+        attributes: [
+          "id",
+          "productName",
+          "price",
+          "views",
+          "productImage",
+          "categoryId",
+          "inStock",
+          "discount",
+        ],
+        order: [["views", "DESC"]],
+        where: whereClause,
+      });
     } catch (error) {
       console.log(error);
     }
     res.send({
       msg: "Product Fetched fetched!!",
       count: result.length,
-      data : result,
+      data: result,
     });
   } catch (err) {
     res.send({ msg: "Internal Server Error", status: "Failure" }).status(505);
@@ -111,15 +126,21 @@ exports.get_product_details = async (req, res) => {
     let productId = req.params.id;
     console.log(req.body);
     if (!productId) {
-      return res.status(400).send({ msg:"productId is required.","status":"Failure" });
+      return res
+        .status(400)
+        .send({ msg: "productId is required.", status: "Failure" });
     }
-    const isProductId = await Product.findOne({ where: {id:productId} });
+    const isProductId = await Product.findOne({ where: { id: productId } });
     if (!isProductId) {
-      return res.status(200).send({ data: [], msg:"Product is not available.","status":"success" });
+      return res.status(200).send({
+        data: [],
+        msg: "Product is not available.",
+        status: "success",
+      });
     }
-    isProductId.views +=1
-    isProductId.save()
-    return res.status(200).send({data: [isProductId], "status":"success"})
+    isProductId.views += 1;
+    isProductId.save();
+    return res.status(200).send({ data: [isProductId], status: "success" });
   } catch (err) {
     console.log(err);
     res.send({ msg: "Internal Server Error", status: "Failure" }).status(505);

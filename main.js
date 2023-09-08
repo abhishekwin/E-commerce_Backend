@@ -10,8 +10,8 @@ const { initializeAdmin, intilize_user_roles } = require("./middleware");
 
 // swagger config
 const swaggerUi = require("swagger-ui-express"),
-swaggerDoc = require("./swagger.json");
- 
+  swaggerDoc = require("./swagger.json");
+
 const startServer = async () => {
   try {
     app.listen(port, () => {
@@ -28,9 +28,8 @@ const startServer = async () => {
     await intilize_user_roles();
     await initializeAdmin();
     // setting up swagger
-// endpoint = http://localhost:6001/api-docs/
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
- 
+    // endpoint = http://localhost:6001/api-docs/
+    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
   } catch (error) {
     console.error("Error starting the server:", error);
   }
