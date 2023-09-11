@@ -156,10 +156,16 @@ exports.remove_product_in_cart = async (req, res) => {
 
 exports.getcart = async (req, res) =>{
    try{
+    const tempId = req.query.tempId || req.body.tempId
+    if (!tempId) {
+      return res.status(500).json({ msg: "tempId is Required." });
+    }
     let istempId = await addCart.findOne({
-      where:  { id: req.query.tempId }
+      where:  { id: tempId }
     });
-
+    if (!istempId) {
+      return res.status(500).json({ msg: "istempId is not exist." });
+    }
     let cart_products = [];
 
     let payload = {
@@ -170,7 +176,6 @@ exports.getcart = async (req, res) =>{
       quantity: 0,
       discount: 0,
     };
-
     let _products = await Product.findAll({ where: { id: istempId.items } });
   
     cart_products = [...cart_products, ..._products];
