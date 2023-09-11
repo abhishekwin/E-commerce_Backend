@@ -11,12 +11,11 @@ exports.handle_cart = async (req, res) => {
     let istempId;
     
     let userId = req.decode?.userId?req.decode.userId:null;
-    console.log(userId);
-    let tempId =  req.body.tempId || req.query.tempId ;
+    let tempId =  req.body.tempId   
     let { productName, quantity } = req.body;
 
     if (!productName) {
-      return res.status(400).json({ msg: "productName is Required." });
+      return res.status(500).json({ msg: "productName is Required." });
     }
     const isProduct = await Product.findOne({
       where: { productName: productName },
@@ -39,9 +38,11 @@ exports.handle_cart = async (req, res) => {
     let cart_products = [];
 
     if (userId || !tempId){
-      istempId = await addCart.findOne({where :{userId: userId}})
-      if(istempId){
-        tempId = istempId.id
+      if(userId){
+        istempId = await addCart.findOne({where :{userId: userId}})
+        if(istempId){
+          tempId = istempId.id
+        }
       }
     }
 

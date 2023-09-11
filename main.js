@@ -9,8 +9,10 @@ const db = require("./src/models/index");
 const { initializeAdmin, intilize_user_roles } = require("./middleware");
 
 // swagger config
-const swaggerUi = require("swagger-ui-express"),
-  swaggerDoc = require("./swagger.json");
+const swaggerUi = require("swagger-ui-express")
+  // swaggerDoc = require("./swagger.json");
+// const { swaggerDocument } = require("../../amitSirRepo/expressjs-sequelize-boilerplate/src/shared");
+const docs = require('./src/docs');
 
 const startServer = async () => {
   try {
@@ -29,7 +31,7 @@ const startServer = async () => {
     await initializeAdmin();
     // setting up swagger
     // endpoint = http://localhost:6001/api-docs/
-    app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+    app.use("/api-docs",swaggerUi.serve, swaggerUi.setup(docs));
   } catch (error) {
     console.error("Error starting the server:", error);
   }
