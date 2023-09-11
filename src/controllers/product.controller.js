@@ -104,6 +104,7 @@ exports.get_products = async (req, res) => {
           "categoryId",
           "inStock",
           "discount",
+          "description"
         ],
         include:[{model:ProductCategories, attributes : ["categoryName"]}],
         order: [["views", "DESC"]],
@@ -111,14 +112,15 @@ exports.get_products = async (req, res) => {
       });
     } catch (error) {
       console.log(error);
+      return res.send({msg: `${error}`})
     }
     res.send({
-      msg: "Product Fetched fetched!!",
-      count: result.length,
-      data: result,
+      msg: result?"Product Fetched fetched!!":"Prodcuts Not Found.",
+      count: result?.length?result.length:0,
+      data: result?result:[],
     });
   } catch (err) {
-    res.send({ msg: "Internal Server Error", status: "Failure" }).status(505);
+    res.send({ msg: `${err}`, status: "Failure" }).status(505);
   }
 };
 
