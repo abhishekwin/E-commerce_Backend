@@ -15,7 +15,6 @@ router.use(
 router.use("/forget_password", user.forget_Password);
 router.use(
   "/reset_password",
-  checkTokenExpirationAndVerification,
   user.reset_Password,
 );
 module.exports = router;

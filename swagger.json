@@ -9,11 +9,12 @@
       "url": "https://opensource.org/licenses/MIT"
     }
   },
-  "basePath": "localhost:8000",
+  "host": "localhost:8000",
+  "basePath": "",
   "tags": [
     {
       "name": "Users",
-      "description": "API for users"
+      "description": "API for Users"
     },
     {
       "name": "Products",
@@ -22,11 +23,24 @@
     {
       "name": "Categories",
       "description": "API for Product Categories."
+    },
+    {
+      "name": "User Cart Details", 
+      "description": "API for User Cart Details."
     }
-  ],
+  ],  
+  "securityDefinitions": {
+    "bearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "scheme": "bearer",
+      "bearerFormat": "JWT",
+      "in": "header"
+    }
+  },
   "produces": ["application/json"],
   "paths": {
-    "/users": {
+    "/api/user/get_users": {
       "get": {
         "tags": ["Users"],
         "summary": "Get all users",
@@ -38,6 +52,23 @@
             }
           }
         }
+      }
+    },
+    "/api/user/sign_up": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Register User",
+        "description": "create user",
+        "parameters": [
+          {
+            "name": "body",
+            "description": "user credentials",
+            "in": "body",
+            "required": true,
+            "schema": { "$ref": "#/definitions/UserDetails" }
+          }
+        ],
+        "responses": { "200": { "description": "Success" } }
       }
     },
     "/user": {
@@ -66,67 +97,6 @@
           }
         }
       }
-    }
-  },
-  "definitions": {
-    "User": {
-      "required": ["name", "_id", "companies"],
-      "properties": {
-        "id": {
-          "type": "integer",
-          "uniqueItems": true
-        },
-        "name": {
-          "type": "string"
-        },
-        "username": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "address": {
-          "type": "object",
-          "properties": {
-            "street": {
-              "type": "string"
-            },
-            "suite": {
-              "type": "string"
-            },
-            "city": {
-              "type": "string"
-            },
-            "zipcode": {
-              "type": "string"
-            }
-          }
-        },
-        "phone": {
-          "type": "string"
-        },
-        "website": {
-          "type": "string"
-        },
-        "company": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "catchPhrase": {
-              "type": "string"
-            },
-            "bs": {
-              "type": "string"
-            }
-          }
-        }
-      }
-    },
-    "Users": {
-      "type": "array",
-      "$ref": "#/definitions/User"
     }
   }
 }
