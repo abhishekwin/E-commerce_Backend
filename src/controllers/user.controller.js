@@ -149,7 +149,7 @@ exports.forget_Password = async (req, res) => {
 exports.reset_Password = async (req, res) => {
   try {
     const { newPassword, confirmPassword, email} = req.body;
-    if (!newPassword && !confirmPassword, email) {
+    if (!newPassword && !confirmPassword, !email) {
       return res.status(400).json({ msg: "Please Provide the Required Fields." });
     }
     if (!(newPassword === confirmPassword)) {
