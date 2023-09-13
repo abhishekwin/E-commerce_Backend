@@ -153,7 +153,6 @@ exports.remove_product_in_cart = async (req, res) => {
   }
 };
 
-
 exports.getcart = async (req, res) =>{
    try{
     const tempId = req.query.tempId || req.body.tempId
@@ -164,7 +163,7 @@ exports.getcart = async (req, res) =>{
       where:  { id: tempId }
     });
     if (!istempId) {
-      return res.status(500).json({ msg: "istempId is not exist." });
+      return res.status(500).json({ msg: "istempId is not exist`  ." });
     }
     let cart_products = [];
 

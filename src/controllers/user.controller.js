@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 const secretKey = process.env.JWT_SECRET_KEY;
 const adminEmail = process.env.AdminEmail;
 const { sendResetPasswordEmail } = require("../validation/nodemailerConfig");
-
+const crypto = require("crypto");
 exports.create = async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -130,25 +130,17 @@ exports.forget_Password = async (req, res) => {
     const user = await userDetail.findOne({ where: { email: email } });
     if (!user) {
       return res.status(404).json({ message: "Email Not Exist." });
-    }
-    // Generate a reset token
-    const jwtToken = jwt.sign(
-      { userId: user.id, userRole: user.role },
-      secretKey,
-      {
-        expiresIn: "1h",
-      },
-    );
-    console.log(jwtToken);
-
-    user.resetPasswordToken = jwtToken;
+    } 
+    console.log(crypto.randomBytes(32).toString("hex"));
+    
+    user.resetPasswordToken = crypto.randomBytes(32).toString("hex");
     await user.save();
     try {
-      await sendResetPasswordEmail(email, jwtToken);
+      await sendResetPasswordEmail(email, user.resetPasswordToke);
     } catch (error) {
       return res.status(505).send({ msg: `${error}` });
     }
-    return res.send({ msg: "Sent Reset password link in email.", jwtToken });
+    return res.send({ msg: "Sent Reset password link in email.", token : user.resetPasswordToken });
   } catch (error) {
     res.send({ msg: `${error}` }).status(500);
   }
@@ -156,8 +148,8 @@ exports.forget_Password = async (req, res) => {
 
 exports.reset_Password = async (req, res) => {
   try {
-    const { newPassword, confirmPassword } = req.body;
-    if (!newPassword && !confirmPassword) {
+    const { newPassword, confirmPassword, email} = req.body;
+    if (!newPassword && !confirmPassword, email) {
       return res.status(400).json({ msg: "Please Provide the Required Fields." });
     }
     if (!(newPassword === confirmPassword)) {
@@ -165,12 +157,12 @@ exports.reset_Password = async (req, res) => {
         .status(400)
         .json({ msg: "New Password are not matched with Confirm Password." });
     }
-    const user = await userDetail.findOne({ where: { id: req.decode.userId } });
+    const user = await userDetail.findOne({ where: { email: email } });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    if (!(user.resetPasswordToken === req.resetPasswordToken)) {
+    if (!(user.resetPasswordToken === req.query.token)) {
       return res.status(401).json({ message: "Password Already changed!!" });
     }
 

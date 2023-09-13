@@ -25,7 +25,7 @@ exports.create = async (req, res) => {
       return res.status(400).send({ message: "Invalid ProductCategories" });
     }
     if (!seller.isSeller) {
-      res
+      return res
         .send({ msg: "You are not a verified seller", status: "Failure" })
         .status(400);
     }
@@ -44,7 +44,7 @@ exports.create = async (req, res) => {
 
     data = await Product.create(payload);
 
-    res.send({ message: "Product save sucessfully", result: data }).status(200);
+    return res.send({ message: "Product save sucessfully", result: data }).status(200);
   } catch (err) {
     console.log(err, "err");
     return res
@@ -62,15 +62,15 @@ exports.getsellerProduct = async (req, res) => {
       where: { sellerId: seller.id },
     });
     if (userWithPosts.length != 0) {
-      res.send({
+      return res.send({
         msg: "Product Fetched fetched!!",
         data: userWithPosts,
       });
     } else {
-      res.send("You don't have any product");
+      return res.send("You don't have any product");
     }
   } catch {
-    res.send({ msg: "Internal Server Error", status: "Failure" }).status(505);
+    return res.send({ msg: "Internal Server Error", status: "Failure" }).status(505);
   }
 };
 
@@ -96,7 +96,7 @@ exports.get_products = async (req, res) => {
     try {
       result = await Product.findAll({
         attributes: [
-          "id",
+          "id", 
           "productName",
           "price",
           "views",
