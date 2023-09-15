@@ -131,9 +131,11 @@ exports.forget_Password = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "Email Not Exist." });
     } 
-    console.log(crypto.randomBytes(32).toString("hex"));
     
     user.resetPasswordToken = crypto.randomBytes(32).toString("hex");
+
+  // Set expire 10 mins
+    user.resetPasswordExpire =  new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
     try {
       await sendResetPasswordEmail(email, user.resetPasswordToke);
@@ -148,24 +150,29 @@ exports.forget_Password = async (req, res) => {
 
 exports.reset_Password = async (req, res) => {
   try {
-    const { newPassword, confirmPassword, email} = req.body;
-    if (!newPassword && !confirmPassword, !email) {
-      return res.status(400).json({ msg: "Please Provide the Required Fields." });
+    const { newPassword, confirmPassword} = req.body;
+    const token  = req.query.token
+    if(!token){
+      return res.status(500).json({ msg: "Token is null" });
+    }
+    if (!newPassword && !confirmPassword) {
+      return res.status(500).json({ msg: "Please Provide the Required Fields." });
     }
     if (!(newPassword === confirmPassword)) {
       return res
         .status(400)
         .json({ msg: "New Password are not matched with Confirm Password." });
     }
-    const user = await userDetail.findOne({ where: { email: email } });
+    const user = await userDetail.findOne({ where: { resetPasswordToken : token } });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
-    if (!(user.resetPasswordToken === req.query.token)) {
+    if (Date.now() >= user.resetPasswordExpire) {
+      return res.status(401).json({ message: "Token has expired" });
+    }
+    if (!(user.resetPasswordToken === token)) {
       return res.status(401).json({ message: "Password Already changed!!" });
     }
-
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedPassword;
     user.resetPasswordToken = null;

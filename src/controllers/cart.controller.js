@@ -11,7 +11,7 @@ exports.handle_cart = async (req, res) => {
     let istempId;
     
     let userId = req.decode?.userId?req.decode.userId:null;
-    let tempId =  req.body.tempId   
+    let tempId =  req.body.tempId?req.body.tempId:null
     let { productName, quantity } = req.body;
 
     if (!productName) {
@@ -36,27 +36,42 @@ exports.handle_cart = async (req, res) => {
     };
 
     let cart_products = [];
+ 
 
-    if (userId || !tempId){
-      if(userId){
-        istempId = await addCart.findOne({where :{userId: userId}})
-        if(istempId){
-          tempId = istempId.id
-        }
-      }
+    if((tempId && !userId) || (userId && tempId) || (!tempId && userId)){ 
+
+          if(tempId||!userId){
+      console.log("masmms11111");
+
+            istempId = await addCart.findOne({where : {id : tempId}})
+          }
+          if(userId||!tempId){
+            istempId = await addCart.findOne({where : {userId : userId}})
+            if(istempId){
+              tempId  = istempId.id
+            }
+          }
+          if(userId && tempId){
+            istempId = await addCart.findOne({where : {userId : userId, id : tempId}})
+            if(!istempId){
+              istempId = await addCart.findOne({where : {id : tempId}})
+            }
+            istempId.userId = userId
+            await istempId.save()
+          }
+         
     }
-
+    
     if ((!tempId && userId) || (!tempId && !userId)) {
       payload.userId = userId ? userId : null;
       istempId = await addCart.create({ ...payload });
+      tempId = istempId.id // save tempid and retrun data
       cart_products = [isProduct];
     }
-
+    
     if (tempId) {
-      istempId = await addCart.findOne({
-        where:  { id: tempId }
-      });
-      istempId.userId = userId ? userId : null;
+      console.log("masmms", istempId.toJSON());
+      console.log(cart_products);
       if (
         !istempId.items.length ||
         !istempId.items.includes(`${isProduct.id}`)
@@ -84,7 +99,7 @@ exports.handle_cart = async (req, res) => {
     });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: "Error adding category" });
+    return res.status(500).json({ error: "Error adding category" });
   }
 };
 
@@ -165,30 +180,37 @@ exports.getcart = async (req, res) =>{
     if (!istempId) {
       return res.status(500).json({ msg: "istempId is not exist`  ." });
     }
-    let cart_products = [];
 
     let payload = {
       userId: null,
       items: [],
       gst: null,
-      totalAmount: null,
       quantity: 0,
-      discount: 0,
+      priceDetails : {price :0, discount :0, delivery_charges : "Free", totalAmount : null},
+      ProductsData : []
     };
+    
+    payload.userId = istempId.userId  
+
+    let priceDetails = payload.priceDetails
     let _products = await Product.findAll({ where: { id: istempId.items } });
-  
-    cart_products = [...cart_products, ..._products];
-    cart_products.forEach((product) => {
-      payload.discount += Math.round((product.price * product.discount) / 100);
-      payload.totalAmount +=
-        product.price - Math.round((product.price * product.discount) / 100);
+
+    _products.forEach((product, index) => {
+
+      payload.ProductsData = [...payload.ProductsData, _products[index]]
+      priceDetails.price += product.price
+      priceDetails.discount += Math.round((product.price * product.discount) / 100);
+      priceDetails.totalAmount +=
+      priceDetails.price - Math.round((product.price * product.discount) / 100);
+      payload.items = [...payload.items,_products[index].id]
     });
-    istempId.discount = payload.discount;
-    istempId.totalAmount = payload.totalAmount;
+    console.log(payload);
+    istempId.discount = priceDetails.discount;
+    istempId.totalAmount = priceDetails.totalAmount;
 
     return res.status(200).send({
       message: "tempId data!!",
-      result: istempId?[istempId]:[],
+      result: payload?[payload]:[],
     });
 
   } catch (error) {

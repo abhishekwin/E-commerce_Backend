@@ -28,19 +28,23 @@ exports.create = async (req, res) => {
       return res
         .send({ msg: "You are not a verified seller", status: "Failure" })
         .status(400);
-    }
-    const result = await fileUpload.fileUpload(req.file.path);
+      }
+      let payload = {
+        productName,
+        description,
+        categoryId: categoryNm.id,
+        price,
+        inStock,
+        productImage: null,
+        discount: discount,
+        sellerId: seller.id,
+      };
 
-    const payload = {
-      productName,
-      description,
-      categoryId: categoryNm.id,
-      price,
-      inStock,
-      productImage: result.secure_url,
-      discount: discount,
-      sellerId: seller.id,
-    };
+    let result
+    if(!req.file.path){
+      result = await fileUpload.fileUpload(req.file.path);
+      payload.productImage = result.secure_url
+    }
 
     data = await Product.create(payload);
 
@@ -95,17 +99,7 @@ exports.get_products = async (req, res) => {
     let result;
     try {
       result = await Product.findAll({
-        attributes: [
-          "id", 
-          "productName",
-          "price",
-          "views",
-          "productImage",
-          "categoryId",
-          "inStock",
-          "discount",
-          "description"
-        ],
+        attributes: {exclude : ['createdAt','updatedAt']},
         include:[{model:ProductCategories, attributes : ["categoryName"]}],
         order: [["views", "DESC"]],
         where: whereClause,

@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: "cascade",
       });
       this.hasMany(Product, { foreignKey: "sellerId" });
-      this.hasMany(addCart, { foreignKey: "userId" });
+      this.hasOne(addCart, { foreignKey: "userId" });
     }
     toJSON() {
       return { ...this.get() };
@@ -39,6 +39,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         defaultValue: null,
       },
+      resetPasswordExpire: {
+        type: DataTypes.DATE,
+        defaultValue: null,
+      }
     },
     {
       sequelize,
